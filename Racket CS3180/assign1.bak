@@ -1,0 +1,61 @@
+#lang racket
+(require test-engine/racket-tests)
+;Contract: symNumSep : L L-> (filtered list)
+;Purpose: symNumSep takes a list of symbols and numbers, and filters them such
+; that the symbols are first then numbers later
+;Code:
+(define (symNumSep L)
+  (append (filter symbol? L) (filter number? L)))
+;Test cases and expected outcomes
+(check-expect (symNumSep  '(0 b 2 d)) '(b d 0 2))
+
+;Contract: dupSymSpl: L->L (some items duped)
+;Purpose: dupSymSpl takes a list and duplicates the symbols and deletes the strings
+;Code:
+(define (dupSymSpl L)
+  (cond
+    [(empty? L) L]
+    [(string? (car L)) (append '() (dupSymSpl (cdr L)))]
+    [(symbol? (car L)) (append (list (car L) (car L)) (dupSymSpl (cdr L)))]
+    [(list? (car L)) (append (list (dupSymSpl (car L))) (dupSymSpl (cdr L)))]
+    [else (append (list (car L)) (dupSymSpl (cdr L)))]))
+;Test cases and expected outcomes
+(check-expect (dupSymSpl '(a 1 b "a2" c 3)) '(a a 1 b b c c 3))
+
+;Contract: dotProduct: l1 * l2 -> num
+;Purpose: taking two list of equal lengths give the dot product of those lists
+;Code:
+(define (dotProduct l1 l2)
+  (if (eq? (length l1) (length l2))(foldr + 0 (map * l1 l2))
+      "invalid input"))
+;Test cases and expected outcomes
+
+;Contract: postfix: L -> L (postfix notation)
+;Purpose: given a list postfix will output a list that is the same but in postfix notation
+;Code:
+(define (postfix L)
+  (cond
+    [(or (not (list? L)) (empty? L)) L]
+    [(or (eq? '+ (car L)) (eq? '* (car L))) (append (postfix (cdr L)) (list (car L)))]
+    [(list? (car L)) (cons (postfix (car L)) (postfix (cdr L)))]
+    [else L]))
+;Test cases and expected outcomes
+
+;Contract: fib: num-> num
+;Purpose: given a number a number will output with for its place in the fibonacci sequence
+;Code:
+(define (fib num)
+  (cond
+    [(eq? 0 num) 0]
+    [(eq? 1 num) 1]
+    [(+ (fib (- num 1)) (fib (- num 2)))]))
+;Test cases and expected outcomes
+
+
+(define (recursiveCallCountFib num)
+  (cond
+    [(eq? 0 num) 0]
+    [(eq? 1 num) 0]
+    [(eq? 2 num) 2]
+    [(+ (+ (recursiveCallCountFib (- num 2)) (recursiveCallCountFib (- num 1))) 2)]))
+(test)
